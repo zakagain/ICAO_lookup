@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICAO Aircraft Lookup</title>
+    <title>ICAO Aircraft & Airport Lookup</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -15,11 +15,18 @@
         <div class="main-content">
             <header>
                 <div class="title-section">
-                    <h1>ICAO Aircraft Lookup</h1>
-                    <p class="subtitle">Search 78,000+ aircraft models and types</p>
+                    <h1>ICAO Lookup</h1>
+                    <p class="subtitle">Search aircraft and airports</p>
                 </div>
                 <div class="search-container">
-                    <input type="text" id="search-input" placeholder="Start typing an aircraft name (e.g., Global 7500)..." autofocus>
+                    <div class="search-row">
+                        <input type="text" id="search-input" placeholder="Search aircraft or airports (e.g., B738, EGLL, LHR, London)..." autofocus>
+                        <select id="filter-select" class="filter-dropdown">
+                            <option value="all">All</option>
+                            <option value="aircraft">Aircraft Only</option>
+                            <option value="airports">Airports Only</option>
+                        </select>
+                    </div>
                     <div id="loader" class="loader"></div>
                 </div>
             </header>
@@ -38,7 +45,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <p>Start typing an aircraft name (e.g., Global 7500)...</p>
+                    <p>Start typing to search aircraft (e.g., Global 7500) or airports (e.g., LHR, London)...</p>
                 </div>
             </main>
         </div>
@@ -55,24 +62,12 @@
                 <div class="readout-value" id="last-sync">--</div>
                 <div class="readout-unit">HOURS AGO</div>
             </div>
-            
-            <div class="readout-section">
-                <div class="readout-label">SYSTEM STATUS</div>
-                <div class="status-indicator">
-                    <span class="status-dot"></span>
-                    <span class="status-text">ONLINE</span>
-                </div>
-            </div>
-            
-            <div class="radar-display">
-                <div class="radar-sweep"></div>
-                <div class="radar-grid"></div>
-            </div>
         </aside>
     </div>
 
     <script>
         const searchInput = document.getElementById('search-input');
+        const filterSelect = document.getElementById('filter-select');
         const resultsList = document.getElementById('results-list');
         const resultsMeta = document.getElementById('results-meta');
         const resultsCount = document.getElementById('results-count');
@@ -83,12 +78,15 @@
         const lastSyncEl = document.getElementById('last-sync');
 
         let aircraftData = [];
+        let airportData = [];
         let lastSyncTime = new Date();
+        let currentFilter = 'all';
 
         // Update readout panel stats
         function updateReadout() {
-            if (aircraftData.length > 0) {
-                dbEntriesEl.textContent = aircraftData.length.toLocaleString();
+            const totalEntries = aircraftData.length + airportData.length;
+            if (totalEntries > 0) {
+                dbEntriesEl.textContent = totalEntries.toLocaleString();
             }
             const hoursSinceSync = Math.floor((new Date() - lastSyncTime) / (1000 * 60 * 60));
             lastSyncEl.textContent = hoursSinceSync < 1 ? '< 1' : hoursSinceSync.toString();
@@ -99,10 +97,14 @@
             loader.style.display = 'block';
             loadingStatus.textContent = 'Loading database...';
             resultsMeta.style.display = 'flex';
-            
+
             try {
-                const response = await fetch('icao_lookup.json');
-                aircraftData = await response.json();
+                const [aircraftResponse, airportsResponse] = await Promise.all([
+                    fetch('icao_lookup.json'),
+                    fetch('airports.json')
+                ]);
+                aircraftData = await aircraftResponse.json();
+                airportData = await airportsResponse.json();
                 loader.style.display = 'none';
                 loadingStatus.textContent = 'Database ready';
                 updateReadout();
@@ -113,7 +115,7 @@
                     }
                 }, 2000);
             } catch (error) {
-                console.error('Failed to load aircraft data:', error);
+                console.error('Failed to load data:', error);
                 loadingStatus.textContent = 'Error loading data';
                 loadingStatus.style.color = '#ff5555';
                 dbEntriesEl.textContent = 'ERROR';
@@ -121,10 +123,71 @@
             }
         }
 
-        function renderResults(matches) {
+        function renderAircraftCard(item) {
+            const card = document.createElement('div');
+            card.className = 'aircraft-card';
+
+            const manufacturer = item.manufacturerName === "''" || item.manufacturerName === "unknow" ? "Unknown" : item.manufacturerName;
+            const model = item.model === "''" || item.model === "unknow" ? "Unknown" : item.model;
+            const typecode = item.typecode === "''" ? "N/A" : item.typecode;
+
+            card.innerHTML = `
+                <div class="info-group">
+                    <span class="manufacturer">${manufacturer}</span>
+                    <span class="model-name">${model}</span>
+                </div>
+                <div class="type-group">
+                    <div class="type-code">${typecode}</div>
+                    <button class="copy-btn" onclick="copyCode(this, '${typecode}')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderAirportCard(item) {
+            const card = document.createElement('div');
+            card.className = 'airport-card';
+
+            const location = item.city && item.country ? `${item.city}, ${item.country}` : item.city || item.country || 'Unknown';
+
+            card.innerHTML = `
+                <div class="info-group">
+                    <span class="airport-name">${item.name}</span>
+                    <span class="airport-location">${location}</span>
+                </div>
+                <div class="code-group">
+                    ${item.iata ? `
+                        <div class="code-badge iata-badge">${item.iata}</div>
+                        <button class="copy-btn" onclick="copyCode(this, '${item.iata}', 'IATA')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy IATA
+                        </button>
+                    ` : ''}
+                    <div class="code-badge icao-badge">${item.icao}</div>
+                    <button class="copy-btn" onclick="copyCode(this, '${item.icao}', 'ICAO')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Copy ICAO
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderResults(aircraftMatches, airportMatches) {
             resultsList.innerHTML = '';
-            
-            if (matches.length === 0) {
+
+            const totalMatches = aircraftMatches.length + airportMatches.length;
+
+            if (totalMatches === 0) {
                 resultsList.innerHTML = `
                     <div class="empty-state">
                         <p>No matches found for "${searchInput.value}"</p>
@@ -135,41 +198,39 @@
             }
 
             const limit = 50;
-            const displayList = matches.slice(0, limit);
-            
-            resultsCount.textContent = `Showing ${displayList.length} of ${matches.length} matches`;
+            const displayAircraft = aircraftMatches.slice(0, limit);
+            const displayAirports = airportMatches.slice(0, limit - displayAircraft.length);
 
-            displayList.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'aircraft-card';
-                
-                // Clean up data
-                const manufacturer = item.manufacturerName === "''" || item.manufacturerName === "unknow" ? "Unknown" : item.manufacturerName;
-                const model = item.model === "''" || item.model === "unknow" ? "Unknown" : item.model;
-                const typecode = item.typecode === "''" ? "N/A" : item.typecode;
+            resultsCount.textContent = `Showing ${Math.min(totalMatches, limit)} of ${totalMatches} matches`;
 
-                card.innerHTML = `
-                    <div class="info-group">
-                        <span class="manufacturer">${manufacturer}</span>
-                        <span class="model-name">${model}</span>
-                    </div>
-                    <div class="type-group">
-                        <div class="type-code">${typecode}</div>
-                        <button class="copy-btn" onclick="copyCode(this, '${typecode}')">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                            </svg>
-                            Copy
-                        </button>
-                    </div>
-                `;
-                resultsList.appendChild(card);
-            });
+            // Aircraft section
+            if (displayAircraft.length > 0) {
+                const aircraftHeader = document.createElement('div');
+                aircraftHeader.className = 'section-header';
+                aircraftHeader.textContent = `/// AIRCRAFT (${displayAircraft.length})`;
+                resultsList.appendChild(aircraftHeader);
+
+                displayAircraft.forEach(item => {
+                    resultsList.appendChild(renderAircraftCard(item));
+                });
+            }
+
+            // Airports section
+            if (displayAirports.length > 0) {
+                const airportHeader = document.createElement('div');
+                airportHeader.className = 'section-header';
+                airportHeader.textContent = `/// AIRPORTS (${displayAirports.length})`;
+                resultsList.appendChild(airportHeader);
+
+                displayAirports.forEach(item => {
+                    resultsList.appendChild(renderAirportCard(item));
+                });
+            }
         }
 
         function handleSearch() {
             const query = searchInput.value.toLowerCase().trim();
-            
+
             if (!query) {
                 resultsList.innerHTML = '';
                 resultsMeta.style.display = 'none';
@@ -179,22 +240,42 @@
 
             initialState.style.display = 'none';
             resultsMeta.style.display = 'flex';
-            
-            // Refined search logic: check if query words appear in any order?
-            // Actually, simple inclusion for "Global 7500" works if concatenated.
-            const matches = aircraftData.filter(item => {
-                const searchStr = `${item.manufacturerName} ${item.model} ${item.typecode}`.toLowerCase();
-                return searchStr.includes(query);
-            });
 
-            renderResults(matches);
+            let aircraftMatches = [];
+            let airportMatches = [];
+
+            // Search aircraft (if filter allows)
+            if (currentFilter === 'all' || currentFilter === 'aircraft') {
+                aircraftMatches = aircraftData.filter(item => {
+                    const searchStr = `${item.manufacturerName} ${item.model} ${item.typecode}`.toLowerCase();
+                    return searchStr.includes(query);
+                });
+            }
+
+            // Search airports (if filter allows)
+            if (currentFilter === 'all' || currentFilter === 'airports') {
+                airportMatches = airportData.filter(item => {
+                    const searchStr = `${item.name} ${item.city} ${item.country} ${item.iata} ${item.icao}`.toLowerCase();
+                    return searchStr.includes(query);
+                });
+            }
+
+            renderResults(aircraftMatches, airportMatches);
         }
 
-        async function copyCode(btn, code) {
+        function handleFilterChange() {
+            currentFilter = filterSelect.value;
+            // Re-run search with new filter if there's a query
+            if (searchInput.value.trim()) {
+                handleSearch();
+            }
+        }
+
+        async function copyCode(btn, code, codeType) {
             try {
                 await navigator.clipboard.writeText(code);
                 const originalText = btn.innerHTML;
-                btn.innerHTML = 'Copied!';
+                btn.innerHTML = codeType ? `Copied ${codeType}!` : 'Copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
                     btn.innerHTML = originalText;
@@ -206,7 +287,8 @@
         }
 
         searchInput.addEventListener('input', handleSearch);
-        
+        filterSelect.addEventListener('change', handleFilterChange);
+
         // Initialize
         init();
     </script>

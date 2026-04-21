@@ -12,8 +12,8 @@
     --border-bright: #374151;
     --input-bg: #1a2332;
     --grid-color: rgba(57, 255, 20, 0.03);
-    --container-width: 900px;
-    --panel-width: 280px;
+    --container-width: 1200px;
+    --panel-width: 320px;
 }
 
 * {
@@ -38,8 +38,9 @@ body {
 .app-container {
     display: flex;
     min-height: 100vh;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
+    padding: 0 2rem;
 }
 
 .main-content {
@@ -92,6 +93,44 @@ h1::before {
     width: 100%;
     max-width: var(--container-width);
     position: relative;
+}
+
+.search-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.search-row input {
+    flex: 1;
+}
+
+.filter-dropdown {
+    padding: 1.25rem 1rem;
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
+}
+
+.filter-dropdown:hover {
+    border-color: var(--border-bright);
+}
+
+.filter-dropdown:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.filter-dropdown option {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
 }
 
 #search-input {
@@ -284,6 +323,80 @@ main {
     box-shadow: 0 0 0 1px var(--accent-glow);
 }
 
+/* Section Headers */
+.section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Airport Cards */
+.airport-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.airport-card:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.airport-name {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.airport-location {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Code Group and Badges */
+.code-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.code-badge {
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2px;
+    font-weight: 600;
+    font-size: 1rem;
+    min-width: 60px;
+    text-align: center;
+    letter-spacing: 0.03em;
+}
+
+.iata-badge {
+    background-color: rgba(57, 255, 20, 0.12);
+    color: var(--accent);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+}
+
+.icao-badge {
+    background-color: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -372,7 +485,7 @@ main {
     color: var(--accent);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1300px) {
     .app-container {
         flex-direction: column;
     }
@@ -403,16 +516,29 @@ main {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     h1 { font-size: 1.5rem; }
-    .aircraft-card {
+    .search-row {
+        flex-direction: column;
+    }
+    .filter-dropdown {
+        width: 100%;
+        padding: 1rem;
+    }
+    .aircraft-card,
+    .airport-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-    .type-group {
+    .type-group,
+    .code-group {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .code-group {
+        gap: 0.5rem;
     }
     header {
         padding: 2rem 1rem 1.5rem;
