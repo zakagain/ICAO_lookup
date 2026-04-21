@@ -11,35 +11,65 @@
 
 </head>
 <body>
+    <div class="app-container">
+        <div class="main-content">
+            <header>
+                <div class="title-section">
+                    <h1>ICAO Aircraft Lookup</h1>
+                    <p class="subtitle">Search 78,000+ aircraft models and types</p>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Start typing an aircraft name (e.g., Global 7500)..." autofocus>
+                    <div id="loader" class="loader"></div>
+                </div>
+            </header>
 
-    <header>
-        <div class="title-section">
-            <h1>ICAO Aircraft Lookup</h1>
-            <p class="subtitle">Search 78,000+ aircraft models and types</p>
-        </div>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Start typing an aircraft name (e.g., Global 7500)..." autofocus>
-            <div id="loader" class="loader"></div>
-        </div>
-    </header>
+            <main>
+                <div id="results-meta" class="results-info" style="display: none;">
+                    <span id="results-count">Showing 0 matches</span>
+                    <span id="loading-status"></span>
+                </div>
+                
+                <div id="results-list" class="results-grid">
+                    <!-- Results will be injected here -->
+                </div>
 
-    <main>
-        <div id="results-meta" class="results-info" style="display: none;">
-            <span id="results-count">Showing 0 matches</span>
-            <span id="loading-status"></span>
-        </div>
-        
-        <div id="results-list" class="results-grid">
-            <!-- Results will be injected here -->
+                <div id="initial-state" class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <p>Start typing an aircraft name (e.g., Global 7500)...</p>
+                </div>
+            </main>
         </div>
 
-        <div id="initial-state" class="empty-state">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <p>Start typing an aircraft name (e.g., Global 7500)...</p>
-        </div>
-    </main>
+        <aside class="readout-panel">
+            <div class="readout-section">
+                <div class="readout-label">DATABASE ENTRIES</div>
+                <div class="readout-value" id="db-entries">--</div>
+                <div class="readout-unit">RECORDS</div>
+            </div>
+            
+            <div class="readout-section">
+                <div class="readout-label">LAST SYNC</div>
+                <div class="readout-value" id="last-sync">--</div>
+                <div class="readout-unit">HOURS AGO</div>
+            </div>
+            
+            <div class="readout-section">
+                <div class="readout-label">SYSTEM STATUS</div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            
+            <div class="radar-display">
+                <div class="radar-sweep"></div>
+                <div class="radar-grid"></div>
+            </div>
+        </aside>
+    </div>
 
     <script>
         const searchInput = document.getElementById('search-input');
@@ -49,8 +79,20 @@
         const initialState = document.getElementById('initial-state');
         const loader = document.getElementById('loader');
         const loadingStatus = document.getElementById('loading-status');
+        const dbEntriesEl = document.getElementById('db-entries');
+        const lastSyncEl = document.getElementById('last-sync');
 
         let aircraftData = [];
+        let lastSyncTime = new Date();
+
+        // Update readout panel stats
+        function updateReadout() {
+            if (aircraftData.length > 0) {
+                dbEntriesEl.textContent = aircraftData.length.toLocaleString();
+            }
+            const hoursSinceSync = Math.floor((new Date() - lastSyncTime) / (1000 * 60 * 60));
+            lastSyncEl.textContent = hoursSinceSync < 1 ? '< 1' : hoursSinceSync.toString();
+        }
 
         // Fetch data on load
         async function init() {
@@ -63,6 +105,8 @@
                 aircraftData = await response.json();
                 loader.style.display = 'none';
                 loadingStatus.textContent = 'Database ready';
+                updateReadout();
+                setInterval(updateReadout, 60000); // Update every minute
                 setTimeout(() => {
                     if (!searchInput.value) {
                         resultsMeta.style.display = 'none';
@@ -72,6 +116,8 @@
                 console.error('Failed to load aircraft data:', error);
                 loadingStatus.textContent = 'Error loading data';
                 loadingStatus.style.color = '#ff5555';
+                dbEntriesEl.textContent = 'ERROR';
+                lastSyncEl.textContent = 'N/A';
             }
         }
 
