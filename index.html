@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICAO Aircraft Lookup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <div class="title-section">
+            <h1>ICAO Aircraft Lookup</h1>
+            <p class="subtitle">Search 78,000+ aircraft models and types</p>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Start typing an aircraft name (e.g., Global 7500)..." autofocus>
+            <div id="loader" class="loader"></div>
+        </div>
+    </header>
+
+    <main>
+        <div id="results-meta" class="results-info" style="display: none;">
+            <span id="results-count">Showing 0 matches</span>
+            <span id="loading-status"></span>
+        </div>
+        
+        <div id="results-list" class="results-grid">
+            <!-- Results will be injected here -->
+        </div>
+
+        <div id="initial-state" class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <p>Start typing an aircraft name (e.g., Global 7500)...</p>
+        </div>
+    </main>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const resultsList = document.getElementById('results-list');
+        const resultsMeta = document.getElementById('results-meta');
+        const resultsCount = document.getElementById('results-count');
+        const initialState = document.getElementById('initial-state');
+        const loader = document.getElementById('loader');
+        const loadingStatus = document.getElementById('loading-status');
+
+        let aircraftData = [];
+
+        // Fetch data on load
+        async function init() {
+            loader.style.display = 'block';
+            loadingStatus.textContent = 'Loading database...';
+            resultsMeta.style.display = 'flex';
+            
+            try {
+                const response = await fetch('icao_lookup.json');
+                aircraftData = await response.json();
+                loader.style.display = 'none';
+                loadingStatus.textContent = 'Database ready';
+                setTimeout(() => {
+                    if (!searchInput.value) {
+                        resultsMeta.style.display = 'none';
+                    }
+                }, 2000);
+            } catch (error) {
+                console.error('Failed to load aircraft data:', error);
+                loadingStatus.textContent = 'Error loading data';
+                loadingStatus.style.color = '#ff5555';
+            }
+        }
+
+        function renderResults(matches) {
+            resultsList.innerHTML = '';
+            
+            if (matches.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No matches found for "${searchInput.value}"</p>
+                    </div>
+                `;
+                resultsCount.textContent = '0 matches';
+                return;
+            }
+
+            const limit = 50;
+            const displayList = matches.slice(0, limit);
+            
+            resultsCount.textContent = `Showing ${displayList.length} of ${matches.length} matches`;
+
+            displayList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'aircraft-card';
+                
+                // Clean up data
+                const manufacturer = item.manufacturerName === "''" || item.manufacturerName === "unknow" ? "Unknown" : item.manufacturerName;
+                const model = item.model === "''" || item.model === "unknow" ? "Unknown" : item.model;
+                const typecode = item.typecode === "''" ? "N/A" : item.typecode;
+
+                card.innerHTML = `
+                    <div class="info-group">
+                        <span class="manufacturer">${manufacturer}</span>
+                        <span class="model-name">${model}</span>
+                    </div>
+                    <div class="type-group">
+                        <div class="type-code">${typecode}</div>
+                        <button class="copy-btn" onclick="copyCode(this, '${typecode}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                `;
+                resultsList.appendChild(card);
+            });
+        }
+
+        function handleSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (!query) {
+                resultsList.innerHTML = '';
+                resultsMeta.style.display = 'none';
+                initialState.style.display = 'block';
+                return;
+            }
+
+            initialState.style.display = 'none';
+            resultsMeta.style.display = 'flex';
+            
+            // Refined search logic: check if query words appear in any order?
+            // Actually, simple inclusion for "Global 7500" works if concatenated.
+            const matches = aircraftData.filter(item => {
+                const searchStr = `${item.manufacturerName} ${item.model} ${item.typecode}`.toLowerCase();
+                return searchStr.includes(query);
+            });
+
+            renderResults(matches);
+        }
+
+        async function copyCode(btn, code) {
+            try {
+                await navigator.clipboard.writeText(code);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+
+        searchInput.addEventListener('input', handleSearch);
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
