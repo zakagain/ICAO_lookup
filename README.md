@@ -2,7 +2,7 @@
 
 A sleek, standalone web interface for searching and copying aircraft ICAO type codes. Built with performance in mind, it handles a database of **78,000+ entries** with instant, live search results.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-zak.github.io/ICAO_lookup-39ff14?style=for-the-badge)](https://zakagain.github.io/ICAO_lookup)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-zakagain.github.io/ICAO_lookup-39ff14?style=for-the-badge)](https://zakagain.github.io/ICAO_lookup)
 
 ![Aircraft Count](https://img.shields.io/badge/Aircraft-78k%2B-39ff14?style=for-the-badge)
 ![Tech](https://img.shields.io/badge/Built_with-Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
