@@ -44,6 +44,11 @@ Since this is a standalone web application, there is no installation or build pr
 - **Vanilla JavaScript**: High-performance filtering logic and clipboard management.
 - **Google Fonts**: [Outfit](https://fonts.google.com/specimen/Outfit) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono).
 
+## 📊 Data Sources
+
+- **[OpenSky Network](https://opensky-network.org/)**: Provides the comprehensive aircraft database and ICAO type codes.
+- **[OpenFlights](https://openflights.org/data.html)**: Provides the global airport database, including IATA and ICAO codes.
+
 ---
 
 ## 📝 License
