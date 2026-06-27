@@ -181,45 +181,30 @@ header {
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid var(--border-soft);
     transition:
-        padding 0.35s ease,
-        border-bottom-color 0.35s ease;
+        background-color 0.25s ease,
+        border-bottom-color 0.25s ease;
 }
 
 header.header--compact {
-    padding: 0;
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom-color: transparent;
 }
 
 header.header--compact .title-section,
 header.header--compact .search-container {
     opacity: 0;
-    visibility: hidden;
-    max-height: 0;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
     transform: translateY(-16px);
-    transition:
-        opacity 0.25s ease,
-        max-height 0.35s ease,
-        transform 0.3s ease,
-        visibility 0s 0.35s,
-        margin 0.35s ease,
-        padding 0.35s ease;
+    pointer-events: none;
 }
 
 .title-section {
     margin-bottom: var(--space-12);
     max-width: var(--container-max);
-    max-height: 300px;
-    overflow: hidden;
     transition:
         opacity 0.25s ease,
-        max-height 0.35s ease,
-        transform 0.3s ease,
-        visibility 0s 0s,
-        margin 0.35s ease,
-        padding 0.35s ease;
+        transform 0.3s ease;
 }
 
 h1 {
@@ -247,15 +232,9 @@ h1 {
     width: 100%;
     max-width: var(--container-max);
     position: relative;
-    max-height: 200px;
-    overflow: hidden;
     transition:
         opacity 0.25s ease,
-        max-height 0.35s ease,
-        transform 0.3s ease,
-        visibility 0s 0s,
-        margin 0.35s ease,
-        padding 0.35s ease;
+        transform 0.3s ease;
 }
 
 .search-row {
