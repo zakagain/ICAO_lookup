@@ -365,6 +365,34 @@
             if (e.key === 'Escape') closeMapModal();
         });
 
+        // Scroll-aware header collapse
+        let lastScrollY = 0;
+        let ticking = false;
+        const SCROLL_THRESHOLD = 80;
+        const header = document.querySelector('header');
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentScrollY = window.scrollY;
+
+                    if (currentScrollY > SCROLL_THRESHOLD) {
+                        if (currentScrollY > lastScrollY) {
+                            header.classList.add('header--compact');
+                        } else {
+                            header.classList.remove('header--compact');
+                        }
+                    } else {
+                        header.classList.remove('header--compact');
+                    }
+
+                    lastScrollY = currentScrollY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
         searchInput.addEventListener('input', handleSearch);
         filterSelect.addEventListener('change', handleFilterChange);
 
