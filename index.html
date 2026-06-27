@@ -209,6 +209,12 @@
                         </svg>
                         Copy ICAO
                     </button>
+                    <button class="copy-btn open-btn" onclick="openMapModal('${item.lat}', '${item.lon}', '${item.name.replace(/'/g, "\\'")}')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                        Open
+                    </button>
                 </div>
             `;
             return card;
@@ -318,11 +324,52 @@
             }
         }
 
+        function openMapModal(lat, lon, name) {
+            document.getElementById('modal-airport-name').textContent = name;
+            document.getElementById('gmaps-link').href = `https://www.google.com/maps?q=${lat},${lon}`;
+            document.getElementById('amaps-link').href = `https://maps.apple.com/?ll=${lat},${lon}&q=${encodeURIComponent(name)}`;
+            document.getElementById('map-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMapModal() {
+            document.getElementById('map-modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('map-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeMapModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMapModal();
+        });
+
         searchInput.addEventListener('input', handleSearch);
         filterSelect.addEventListener('change', handleFilterChange);
 
         // Initialize
         init();
     </script>
+
+    <div id="map-modal" class="modal-overlay" role="dialog" aria-label="Open in Maps">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Open in Maps</h2>
+                <span class="modal-airport-name" id="modal-airport-name"></span>
+            </div>
+            <div class="modal-options">
+                <a id="gmaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
+                    <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/google.svg" alt="" width="24" height="24" loading="lazy">
+                    Open in Google Maps
+                </a>
+                <a id="amaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
+                    <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/apple-alt.svg" alt="" width="24" height="24" loading="lazy">
+                    Open in Apple Maps
+                </a>
+            </div>
+            <button class="modal-close-btn" onclick="closeMapModal()">Close</button>
+        </div>
+    </div>
 </body>
 </html>
