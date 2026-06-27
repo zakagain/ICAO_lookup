@@ -47,6 +47,26 @@
                     </svg>
                     <p>Start typing to search aircraft (e.g., Global 7500) or airports (e.g., LHR, London)...</p>
                 </div>
+
+                <div id="map-modal" class="modal-overlay" role="dialog" aria-label="Open in Maps">
+                    <div class="modal-card">
+                        <div class="modal-header">
+                            <h2>Open in Maps</h2>
+                            <span class="modal-airport-name" id="modal-airport-name"></span>
+                        </div>
+                        <div class="modal-options">
+                            <a id="gmaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
+                                <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/google.svg" alt="" width="24" height="24" loading="lazy">
+                                Open in Google Maps
+                            </a>
+                            <a id="amaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
+                                <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/apple-alt.svg" alt="" width="24" height="24" loading="lazy">
+                                Open in Apple Maps
+                            </a>
+                        </div>
+                        <button class="modal-close-btn" onclick="closeMapModal()">Close</button>
+                    </div>
+                </div>
             </main>
         </div>
 
@@ -351,25 +371,5 @@
         // Initialize
         init();
     </script>
-
-    <div id="map-modal" class="modal-overlay" role="dialog" aria-label="Open in Maps">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2>Open in Maps</h2>
-                <span class="modal-airport-name" id="modal-airport-name"></span>
-            </div>
-            <div class="modal-options">
-                <a id="gmaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
-                    <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/google.svg" alt="" width="24" height="24" loading="lazy">
-                    Open in Google Maps
-                </a>
-                <a id="amaps-link" class="modal-option" href="" target="_blank" rel="noopener" onclick="closeMapModal()">
-                    <img class="modal-icon" src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/apple-alt.svg" alt="" width="24" height="24" loading="lazy">
-                    Open in Apple Maps
-                </a>
-            </div>
-            <button class="modal-close-btn" onclick="closeMapModal()">Close</button>
-        </div>
-    </div>
 </body>
 </html>
