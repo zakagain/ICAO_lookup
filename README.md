@@ -27,7 +27,14 @@ Since this is a standalone web application, there is no installation or build pr
    git clone https://github.com/zak/ICAO_lookup.git
    ```
 2. **Open the app**:
-   Simply open `index.html` in your favorite web browser.
+   Run 
+```bash
+python -m http.server 8000
+```
+or
+```bash
+python3 -m http.server 8000
+```
 
 > [!NOTE]
 > For the best experience, it is recommended to run this via a local server (like Live Server in VS Code) to ensure the 8MB JSON database loads quickly and reliably.
