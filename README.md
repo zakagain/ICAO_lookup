@@ -23,9 +23,9 @@ A sleek, standalone web interface for searching and copying aircraft ICAO type c
 Since this is a standalone web application, there is no installation or build process required.
 
 1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/zak/ICAO_lookup.git
-   ```
+```bash
+git clone https://github.com/zak/ICAO_lookup.git
+```
 2. **Open the app**:
    Run 
 ```bash
