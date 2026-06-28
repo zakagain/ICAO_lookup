@@ -27,7 +27,7 @@ A standalone web interface for searching and copying aircraft ICAO type codes. H
 
 - **HTML5 & CSS3** — Custom grid-based layout and modern typography.
 - **Vanilla JavaScript** — High-performance filtering and clipboard management.
-- **Google Fonts** — [Outfit](https://fonts.google.com/specimen/Outfit) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono).
+- **Fonts** — [SF Pro family](https://developer.apple.com/fonts) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono).
 
 ## Data Sources
 
