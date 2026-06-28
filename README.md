@@ -1,8 +1,8 @@
-# 🛩️ ICAO Aircraft Lookup
+# ICAO Aircraft Lookup
 
-A sleek, standalone web interface for searching and copying aircraft ICAO type codes. Built with performance in mind, it handles a database of **78,000+ entries** with instant, live search results.
+A standalone web interface for searching and copying aircraft ICAO type codes. Handles a database of **78,000+ entries** with instant, live search.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-zakagain.github.io/ICAO_lookup-39ff14?style=for-the-badge)](https://zakagain.github.io/ICAO_lookup)
+[![Live Demo](https://img.shields.io/badge/Demo-zakagain.github.io/ICAO_lookup-39ff14?style=for-the-badge)](https://zakagain.github.io/ICAO_lookup)
 
 ![Aircraft Count](https://img.shields.io/badge/Aircraft-78k%2B-39ff14?style=for-the-badge)
 ![Tech](https://img.shields.io/badge/Built_with-Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -10,57 +10,36 @@ A sleek, standalone web interface for searching and copying aircraft ICAO type c
 
 ---
 
-## ✨ Features
+## Features
 
-- **🚀 Instant Search**: Filters through 78k entries as you type, matching manufacturer, model, and ICAO code.
-- **🎨 Premium Dark Mode**: A professional, high-contrast interface designed for low-light cockpit/atc environments.
-- **📋 One-Click Copy**: Quickly copy ICAO codes to your clipboard for use in flight trackers or documentation.
-- **📱 Responsive Design**: Works seamlessly across desktops, tablets, and mobile devices.
-- **🔋 Lightweight**: No external libraries or frameworks required (no jQuery, no Tailwind).
+- **Instant Search** — Filters through 78k entries as you type, matching manufacturer, model, and ICAO code.
+- **One-Click Copy** — Copy ICAO codes to clipboard for use in flight trackers or documentation.
+- **Responsive Design** — Works across desktops, tablets, and mobile devices.
+- **Lightweight** — No external libraries or frameworks required.
 
-## 🚀 Getting Started
+## Project Structure
 
-Since this is a standalone web application, there is no installation or build process required.
+- `index.html` — Main user interface and application logic.
+- `style.css` — Dark theme styles and layout definitions.
+- `icao_lookup.json` — Aircraft database containing 78k+ unique records.
 
-1. **Clone the repository**:
-```bash
-git clone https://github.com/zak/ICAO_lookup.git
-```
-2. **Open the app**:
-   Run 
-```bash
-python -m http.server 8000
-```
-or
-```bash
-python3 -m http.server 8000
-```
+## Built With
 
-> [!NOTE]
-> For the best experience, it is recommended to run this via a local server (like Live Server in VS Code) to ensure the 8MB JSON database loads quickly and reliably.
+- **HTML5 & CSS3** — Custom grid-based layout and modern typography.
+- **Vanilla JavaScript** — High-performance filtering and clipboard management.
+- **Google Fonts** — [Outfit](https://fonts.google.com/specimen/Outfit) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono).
 
-## 📂 Project Structure
+## Data Sources
 
-- `index.html`: The main user interface and logic.
-- `style.css`: Professional dark mode styles and layout definitions.
-- `icao_lookup.json`: The aircraft database containing 78k+ unique aircraft records.
-
-## 🛠️ Built With
-
-- **HTML5 & CSS3**: Custom grid-based layout and modern typography.
-- **Vanilla JavaScript**: High-performance filtering logic and clipboard management.
-- **Google Fonts**: [Outfit](https://fonts.google.com/specimen/Outfit) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono).
-
-## 📊 Data Sources
-
-- **[OpenSky Network](https://opensky-network.org/)**: Provides the comprehensive aircraft database and ICAO type codes.
-- **[OpenFlights](https://openflights.org/data.html)**: Provides the global airport database, including IATA and ICAO codes.
+- **[OpenSky Network](https://opensky-network.org/)** — Provides the comprehensive **aircraft** database and ICAO type codes.
+- **[OpenFlights](https://openflights.org/data.html)** — Provides the global **airport** database, including IATA and ICAO codes.
 
 ---
 
-## 📝 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-*Created with ❤️ for the aviation community.*
+
+Created for the aviation community.
