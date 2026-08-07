@@ -175,6 +175,15 @@
             }
         }
 
+        function searchGoogle(manufacturer, model) {
+            const query = [manufacturer, model]
+                .filter(part => part && part !== 'Unknown')
+                .join(' ')
+                .trim();
+            if (!query) return;
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank', 'noopener');
+        }
+
         function renderAircraftCard(item) {
             const card = document.createElement('div');
             card.className = 'aircraft-card';
@@ -183,6 +192,9 @@
             const model = item.model === "''" || item.model === "unknow" ? "Unknown" : item.model;
             const typecode = item.typecode === "''" ? "N/A" : item.typecode;
 
+            const manufacturerEscaped = manufacturer.replace(/'/g, "\\'");
+            const modelEscaped = model.replace(/'/g, "\\'");
+
             card.innerHTML = `
                 <div class="info-group">
                     <span class="manufacturer">${manufacturer}</span>
@@ -190,6 +202,12 @@
                 </div>
                 <div class="type-group">
                     <div class="type-code">${typecode}</div>
+                    <button class="copy-btn open-btn" onclick="searchGoogle('${manufacturerEscaped}', '${modelEscaped}')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Search Google
+                    </button>
                     <button class="copy-btn" onclick="copyCode(this, '${typecode}')">
                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
